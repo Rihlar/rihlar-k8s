@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: authbase-svc
+  namespace: rihlar
+spec:
+  type: LoadBalancer
+  selector:
+    app: rihlar-auth
+  ports:
+    - name: api-port
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rihlar-auth
+  namespace: rihlar
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rihlar-auth
+  template:
+    metadata:
+      labels:
+        app: rihlar-auth
+    spec:
+      containers:
+        - name: authbase
+          image: mattuu0/authbase-auth:0.2.2
+          ports:
+            - containerPort: 8080
+            - containerPort: 9000
+          resources:
+            requests:
+              cpu: "100m"    # 例：100ミリコア
+              memory: "128Mi"
+            limits:
+              cpu: "500m"    # 例：500ミリコア
+              memory: "256Mi"
+          env:
+            - name: GoogleClientID
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: GoogleClientID
+
+            - name: GoogleClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: GoogleClientSecret
+
+            - name: GoogleCallback
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: GoogleCallback
+
+            - name: TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: TokenSecret 
+
+            - name: ADMIN_SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: AdminSessionKey
+
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: JwtPrivKey
+
+            - name: DB_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: AuthdbDsn
+
+          volumeMounts:
+            - name: assets-vol
+              mountPath: /assets/icons
+      volumes:
+        - name: assets-vol
+          persistentVolumeClaim:
+            claimName: rihlar-claim
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rihlar-scaling
+  namespace: rihlar
+spec:
+  maxReplicas: 20
+  behavior:
+    scaleDown:
+      policies:
+      - type: Pods
+        value: 3
+        periodSeconds: 1
+      stabilizationWindowSeconds: 0
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Pods
+        value: 3
+        periodSeconds: 1
+      selectPolicy: Max
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rihlar-auth

@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rihlar-ingress
+  labels:
+    name: rihlar-ingress
+  annotations:  
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  namespace: rihlar
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: k8s-rihlar.mattuu.com
+    http:
+      paths:
+      - path: /auth(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: authbase-svc
+            port: 
+              number: 80
+      - path: /game(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rihlar-game-svc
+            port: 
+              number: 8090
+      - path: /gcore(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rihlar-gcore-svc
+            port: 
+              number: 8090
+      - path: /user(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rihlar-user-svc
+            port: 
+              number: 8090
+      - path: /statics(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rihlar-static-svc
+            port: 
+              number: 80

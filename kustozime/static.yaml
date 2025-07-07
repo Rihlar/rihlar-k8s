@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rihlar-static
+  namespace: rihlar
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rihlar-static
+  template:
+    metadata:
+      labels:
+        app: rihlar-static
+    spec:
+      containers:
+        - name: rihlar-static
+          image: ghcr.io/rihlar/rihlar_back/rihlar-static:latest
+          ports:
+            - containerPort: 80
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rihlar-static-svc
+  namespace: rihlar
+spec:
+  type: LoadBalancer
+  selector:
+    app: rihlar-static
+  ports:
+  - port: 80
+    targetPort: 80
