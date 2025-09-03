@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: authbase
-          image: mattuu0/authbase-auth:0.2.2
+          image: mattuu0/authbase-auth:0.2.4
           ports:
             - containerPort: 8080
             - containerPort: 9000
@@ -84,6 +84,18 @@ spec:
                 secretKeyRef:
                   name: rihlarsecret
                   key: AuthdbDsn
+
+            - name: AdminEmail
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: AdminEmail
+
+            - name: AdminPassword
+              valueFrom:
+                secretKeyRef:
+                  name: rihlarsecret
+                  key: AdminPassword
 
           volumeMounts:
             - name: assets-vol
