@@ -6,6 +6,7 @@ resources:
   - ./game.yaml
   - ./gcore.yaml
   - ./user.yaml
+  - ./friend.yaml
   - ./redis.yaml
   - ./static.yaml
   - ./ingress.yaml

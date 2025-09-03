@@ -41,6 +41,13 @@ spec:
             name: rihlar-user-svc
             port: 
               number: 8090
+      - path: /friend(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rihlar-friend-svc
+            port: 
+              number: 8090
       - path: /statics(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
