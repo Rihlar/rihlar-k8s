@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: rihlar.kokomeow.com
+  - host: rihlar-stage.kokomeow.com
     http:
       paths:
       - path: /auth(/|$)(.*)
