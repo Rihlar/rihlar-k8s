@@ -4,7 +4,7 @@ metadata:
   name: rihlar-user
   namespace: rihlar
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: rihlar-user
@@ -87,7 +87,7 @@ spec:
         averageUtilization: 50
         type: Utilization
     type: Resource
-  minReplicas: 3
+  minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
